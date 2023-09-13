@@ -24,7 +24,7 @@ namespace LibraryApp.service
 	  }
 
 
-	public Book borrowBook(long isbnCode, Member member, DateOnly borrowedAt)
+	public Book borrowBook(long isbnCode, Member member)
 	{
 		Book book = new Book();
 		if (member != null && member.BorrowBook != null)

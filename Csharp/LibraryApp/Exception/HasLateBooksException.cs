@@ -8,7 +8,7 @@ namespace com.proxym.libraryapp.Exceptions
   public class HasLateBooksException : Exception
     {
     DateTime date;
-    public HasLateBooksException(string message, DateTime date) : base(string.Format("book late", date)) { }
+    public HasLateBooksException(string message, DateTime date) : base(string.Format("book late")) { }
 
 
     } 

@@ -27,7 +27,7 @@ namespace LibraryApp.Repositories
         /// </exception>
         /// <seealso cref="com.proxym.libraryapp.book.ISBN"/>
         /// <seealso cref="Member"/>
-        Book borrowBook(long isbnCode, Member member, DateOnly borrowedAt);
+        Book borrowBook(long isbnCode, Member member);
 
         /// <summary>
         /// A member returns a book to the library.

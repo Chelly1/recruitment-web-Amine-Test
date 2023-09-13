@@ -2,7 +2,7 @@ using com.proxym.libraryapp.book;
 using com.proxym.libraryapp.Exceptions;
 
 using LibraryApp.Entities;
-
+using LibraryApp.Exception;
 using LibraryApp.IRepositories;
 using LibraryApp.Repositories;
 using LibraryApp.service;
@@ -11,6 +11,8 @@ using Moq;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+
 using Xunit;
 
 namespace TestProjectBook
@@ -25,19 +27,62 @@ namespace TestProjectBook
       bookRepository = new BookRepository();
       //books = GetBooks(); 
       }
-    [Fact]
-    public void findBookISBN968787565445()
-      {
-      Assert.NotNull(bookRepository.findBook(968787565445L));
-      }
+   
+    
+
 
     [Fact]
-    public void member_can_borrow_a_book_if_book_is_available()
-      {
-      Assert.True(false, "Implement me.");
-      }
+	  public void member_can_borrow_a_book_if_book_is_available()
+		{
 
-    [Fact]
+		BookRepository bookRepository = new BookRepository();
+
+		var bookRepositoryMock = new Mock<IbookRepository>();
+		Book book = new Book();
+      book.Isbn = new Isbn(12L);
+
+
+      var bk = new List<Book>();
+      bk.Add(book);
+
+
+	  bookRepository.saveAll(bk);
+		long num = 12345;
+		var libraryService = new LibraryService(bookRepository);
+
+
+		//Given
+		bookRepositoryMock.Setup(x => x.findBook(12l)).Returns(book);
+		Student student = new Student(700);
+      student.NumberDaysKeeping = 2;
+
+	  student.BorrowBook = book;
+		//WHEN
+		Book bookResult = libraryService.borrowBook(12L, student);
+		//THEN
+		Assert.NotNull(bookResult);
+
+	  }
+
+
+	[Fact]
+	public void member_can_not_borrow_a_book_if_book_is_not_available()
+	  {
+	  // Given
+	  LibraryService libraryService = new LibraryService(bookRepository);
+	  var libraryServiceMock = new Mock<ILibrary>();
+	  Book book = new Book();
+	  Member member = new Student(700);
+
+	  libraryServiceMock.Setup(x => x.borrowBook(46578964513L, member)).Returns(book);
+
+	  // WHEN // THEN 
+	  Assert.Throws<BookNotFoundException>(() =>
+	  libraryService.borrowBook(46578964513L, member)
+	  );
+	  }
+
+	[Fact]
     public void borrowed_book_is_no_longer_available()
       {
 
@@ -52,7 +97,7 @@ namespace TestProjectBook
       bookRepositoryMock.Setup(x => x.findBook(It.IsAny<long>())).Returns(book);
       DateOnly BorrowedAt = DateOnly.FromDateTime(DateTime.Now).AddDays(-30);
       // WHEN
-      Book bookResult = libraryService.borrowBook(46578964513L, student, BorrowedAt);
+      Book bookResult = libraryService.borrowBook(46578964513L, student );
 
       // THEN
       Assert.NotNull(bookResult);
@@ -90,6 +135,7 @@ namespace TestProjectBook
       var bookRepositoryMock = new Mock<IbookRepository>();
       bookRepositoryMock.Setup(x => x.findBook(46578964513L)).Returns(book);
       var libraryService = new LibraryService(bookRepository);
+      
       //WHEN // THEN 
       //    Assert Throws ( HasLateBooksException(string.fomat("rrr", DateTime.now)));
 
